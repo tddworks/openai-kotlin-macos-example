@@ -46,11 +46,22 @@ struct ContentView: View {
                 if waitingForResponse {
                     ProgressView()
                 } else if (generateImageUrl != nil) {
-                    AsyncImage(url: URL(string: generateImageUrl!)) { image in
-                        image.resizable()
-                                .aspectRatio(contentMode: .fit)
-                    } placeholder: {
-                        ProgressView()
+                    AsyncImage(url: URL(string: generateImageUrl!)) { phase in
+                        switch phase {
+                        case .empty:
+                            ZStack {
+                                Color.gray
+                                ProgressView()
+                            }
+                        case .success(let image):
+                            image.resizable()
+                                    .aspectRatio(contentMode: .fit)
+                        case .failure(let error):
+                            Text(error.localizedDescription)
+                                // use placeholder for production app
+                        @unknown default:
+                            EmptyView()
+                        }
                     }
                 } else {
                     TextEditor(text: $response)
@@ -79,8 +90,10 @@ struct ContentView: View {
 
                     for imageResponse in listResponse.data {
                         if let image = imageResponse as? image {
-                            self.generateImageUrl = image.url
-                            self.waitingForResponse = false
+                            DispatchQueue.main.async {
+                                self.generateImageUrl = image.url
+                                self.waitingForResponse = false
+                            }
                         }
                     }
                 } else {
