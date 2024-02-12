@@ -18,6 +18,7 @@ struct ContentView: View {
     @State private var generateImageModels = ["dall-e-2", "dall-e-3"]
     @State private var generateImageModel: String = "dall-e-2"
     @State private var generateImageUrl: String? = nil
+    @State private var waitingForResponse: Bool = false
     var body: some View {
         VStack {
             GroupBox(label: Text("OpenAI Settings")) {
@@ -26,27 +27,36 @@ struct ContentView: View {
             }
 
             GroupBox(label: Text("OpenAI Playground")) {
-                Toggle("Generate Image", isOn: $generateImage)
-                        .controlSize(.mini)
-                        .toggleStyle(.switch).padding(.trailing, 20)
+                HStack {
+                    Toggle("Generate Image", isOn: $generateImage)
+                            .controlSize(.mini)
+                            .toggleStyle(.switch)
+                    if generateImage {
+                        Picker("Model", selection: $generateImageModel) {
+                            ForEach(generateImageModels, id: \.self) {
+                                Text($0)
+                            }
+                        }
+                    }
+                    Spacer()
+                }
 
                 TextEditor(text: $prompt)
 
-                if generateImage {
-                    Picker("Model", selection: $generateImageModel) {
-                        ForEach(generateImageModels, id: \.self) {
-                            Text($0)
-                        }
+                if waitingForResponse {
+                    ProgressView()
+                } else if (generateImageUrl != nil) {
+                    AsyncImage(url: URL(string: generateImageUrl!)) { image in
+                        image.resizable()
+                                .aspectRatio(contentMode: .fit)
+                    } placeholder: {
+                        ProgressView()
                     }
-                }
-
-                if (generateImageUrl != nil) {
-                    Image(nsImage: NSImage(contentsOf: URL(string: generateImageUrl!)!)!)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
                 } else {
                     TextEditor(text: $response)
                 }
+
+
             }
             Button("Submit") {
                 sendRequest()
@@ -60,13 +70,17 @@ struct ContentView: View {
             do {
                 let client = DarwinOpenAI(token: apiKey, url: url)
                 if generateImage {
-                    let listResponse = try await client.generate(request: ImageCreate.Companion.shared.create(
-                            prompt: prompt,
-                            model: generateImageModel))
+                    self.waitingForResponse = true
+                    let listResponse = try await client.generate(
+                            request: ImageCreate.Companion.shared.create(
+                                    prompt: prompt,
+                                    model: generateImageModel)
+                    )
 
                     for imageResponse in listResponse.data {
                         if let image = imageResponse as? image {
                             self.generateImageUrl = image.url
+                            self.waitingForResponse = false
                         }
                     }
                 } else {
