@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "openai-kotlin",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/tddworks/openai-kotlin",
+      "state" : {
+        "revision" : "13d855f008c30bddd687acc9d78c90898e43b31a",
+        "version" : "0.1.3"
+      }
+    }
+  ],
+  "version" : 2
+}
