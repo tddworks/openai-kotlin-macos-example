@@ -90,6 +90,7 @@ struct ContentView: View {
 
                     for imageResponse in listResponse.data {
                         if let image = imageResponse as? image {
+                            // Update the UI on the main thread
                             DispatchQueue.main.async {
                                 self.generateImageUrl = image.url
                                 self.waitingForResponse = false
