@@ -356,7 +356,7 @@
 			repositoryURL = "https://github.com/tddworks/openai-kotlin";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.1.3;
+				minimumVersion = 0.1.4;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

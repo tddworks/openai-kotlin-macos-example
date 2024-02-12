@@ -7,38 +7,79 @@
 import SwiftUI
 import openai_client_darwin
 
+typealias image = openai_client_darwin.Image
+
 struct ContentView: View {
     @State private var apiKey: String = ""
     @State private var url: String = "api.openai.com"
     @State private var prompt: String = "Once upon a time"
     @State private var response: String = ""
+    @State private var generateImage: Bool = false
+    @State private var generateImageModels = ["dall-e-2", "dall-e-3"]
+    @State private var generateImageModel: String = "dall-e-2"
+    @State private var generateImageUrl: String? = nil
     var body: some View {
         VStack {
             GroupBox(label: Text("OpenAI Settings")) {
                 TextField("API Key", text: $apiKey)
-                        .padding()
                 TextField("URL", text: $url)
-                        .padding()
             }
-            GroupBox(label: Text("OpenAI Playground")) {
-                TextEditor(text: $prompt)
-                        .padding()
 
-                TextEditor(text: $response)
-                        .padding()
+            GroupBox(label: Text("OpenAI Playground")) {
+                Toggle("Generate Image", isOn: $generateImage)
+                        .controlSize(.mini)
+                        .toggleStyle(.switch).padding(.trailing, 20)
+
+                TextEditor(text: $prompt)
+
+                if generateImage {
+                    Picker("Model", selection: $generateImageModel) {
+                        ForEach(generateImageModels, id: \.self) {
+                            Text($0)
+                        }
+                    }
+                }
+
+                if (generateImageUrl != nil) {
+                    Image(nsImage: NSImage(contentsOf: URL(string: generateImageUrl!)!)!)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                } else {
+                    TextEditor(text: $response)
+                }
             }
             Button("Submit") {
+                sendRequest()
+            }
+        }
+                .padding()
+    }
+
+    func sendRequest() {
+        Task { @MainActor in
+            do {
                 let client = DarwinOpenAI(token: apiKey, url: url)
-                Task { @MainActor in
+                if generateImage {
+                    let listResponse = try await client.generate(request: ImageCreate.Companion.shared.create(
+                            prompt: prompt,
+                            model: generateImageModel))
+
+                    for imageResponse in listResponse.data {
+                        if let image = imageResponse as? image {
+                            self.generateImageUrl = image.url
+                        }
+                    }
+                } else {
                     for await response in client.streamCompletions(request: ChatCompletionRequest.Companion.shared.chatCompletionRequest(
                             messages: [ChatMessageCompanion.shared.user(content: prompt)],
                             model: "gpt-3.5-turbo")) {
                         self.response += response.content()
                     }
                 }
+            } catch {
+                print("We had an error: \(error)")
             }
         }
-                .padding()
     }
 }
 
