@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/tddworks/openai-kotlin",
       "state" : {
-        "revision" : "35e50d7295e26e3c91fc5439716be539e3f8b1dc",
-        "version" : "0.1.6"
+        "revision" : "b1e9e97e59caaa33a2fc8a0487127331d56b17f1",
+        "version" : "0.1.8"
       }
     }
   ],

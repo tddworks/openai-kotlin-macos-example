@@ -24,6 +24,9 @@ struct ContentView: View {
     @State private var generateImageSizes = ["1024x1024", "1792*1024"]
     @State private var generateImageSize: String = "1024x1024"
     @State private var generateImageUrl: String? = nil
+    @State private var generateImageB64: Data? = nil
+    @State private var generateImageFormats: [String] = ["url", "b64_json"]
+    @State private var generateImageFormat: String = "url"
     @State private var waitingForResponse: Bool = false
     var body: some View {
         VStack {
@@ -60,6 +63,11 @@ struct ContentView: View {
                                 Text($0)
                             }
                         }
+                        Picker("Format", selection: $generateImageFormat) {
+                            ForEach(generateImageFormats, id: \.self) {
+                                Text($0)
+                            }
+                        }
                     }
                     Spacer()
                 }
@@ -68,22 +76,34 @@ struct ContentView: View {
 
                 if waitingForResponse {
                     ProgressView()
-                } else if (generateImageUrl != nil) {
+                } else if (generateImageUrl != nil || generateImageB64 != nil) {
+
+
                     HStack {
                         Text("Generated Image")
-                        Button("Copy URL") {
-                            let pasteboard = NSPasteboard.general
-                            pasteboard.clearContents()
-                            pasteboard.setString(generateImageUrl!, forType: .string)
+
+                        if generateImageUrl != nil {
+                            Button("Copy Image URL") {
+                                let pasteboard = NSPasteboard.general
+                                pasteboard.clearContents()
+                                pasteboard.setString(generateImageUrl!, forType: .string)
+                            }
                         }
                     }
 
-                    AsyncImage(url: URL(string: generateImageUrl!)) { image in
-                        image.resizable().scaledToFit()
-                                .transition(.opacity.animation(.easeInOut(duration: 0.5)))
+                    if generateImageB64 != nil {
+                        Image(nsImage: NSImage(data: generateImageB64!)!)
+                                .resizable()
+                                .scaledToFit()
                                 .frame(height: 150)
-                    } placeholder: {
-                        ProgressView()
+                    } else {
+                        AsyncImage(url: URL(string: generateImageUrl!)) { image in
+                            image.resizable().scaledToFit()
+                                    .transition(.opacity.animation(.easeInOut(duration: 0.5)))
+                                    .frame(height: 150)
+                        } placeholder: {
+                            ProgressView()
+                        }
                     }
                 } else {
                     TextEditor(text: $response)
@@ -111,14 +131,26 @@ struct ContentView: View {
                                         model: generateImageModel,
                                         size: generateImageSize,
                                         style: generateImageStyle,
-                                        quality: generateImageQuality
+                                        quality: generateImageQuality,
+                                        format: generateImageFormat
                                 )
                         )
 
                         for imageResponse in listResponse.data {
                             if let image = imageResponse as? image {
                                 DispatchQueue.main.async {
-                                    self.generateImageUrl = image.url
+                                    if let imageUrl = image.url {
+                                        self.generateImageUrl = imageUrl
+                                    } else {
+                                        if let base64Data = image.b64JSON?.data(using: .utf8),
+                                           let data = Data(base64Encoded: base64Data) {
+                                            self.generateImageB64 = data
+                                        } else {
+                                            fatalError("Failed to decode base64 image data or handle guard failure.")
+                                        }
+                                    }
+
+
                                     self.waitingForResponse = false
                                 }
                             }
