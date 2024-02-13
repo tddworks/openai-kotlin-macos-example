@@ -46,22 +46,12 @@ struct ContentView: View {
                 if waitingForResponse {
                     ProgressView()
                 } else if (generateImageUrl != nil) {
-                    AsyncImage(url: URL(string: generateImageUrl!)) { phase in
-                        switch phase {
-                        case .empty:
-                            ZStack {
-                                Color.gray
-                                ProgressView()
-                            }
-                        case .success(let image):
-                            image.resizable()
-                                    .aspectRatio(contentMode: .fit)
-                        case .failure(let error):
-                            Text(error.localizedDescription)
-                                // use placeholder for production app
-                        @unknown default:
-                            EmptyView()
-                        }
+                    AsyncImage(url: URL(string: generateImageUrl!)) { image in
+                        image.resizable().scaledToFit()
+                                .transition(.opacity.animation(.easeInOut(duration: 0.5)))
+                                .frame(height: 150)
+                    } placeholder: {
+                        ProgressView()
                     }
                 } else {
                     TextEditor(text: $response)
@@ -82,20 +72,24 @@ struct ContentView: View {
                 let client = DarwinOpenAI(token: apiKey, url: url)
                 if generateImage {
                     self.waitingForResponse = true
-                    let listResponse = try await client.generate(
-                            request: ImageCreate.Companion.shared.create(
-                                    prompt: prompt,
-                                    model: generateImageModel)
-                    )
+                    do {
+                        let listResponse = try await client.generate(
+                                request: ImageCreate.Companion.shared.create(
+                                        prompt: prompt,
+                                        model: generateImageModel
+                                )
+                        )
 
-                    for imageResponse in listResponse.data {
-                        if let image = imageResponse as? image {
-                            // Update the UI on the main thread
-                            DispatchQueue.main.async {
+                        for imageResponse in listResponse.data {
+                            if let image = imageResponse as? image {
                                 self.generateImageUrl = image.url
                                 self.waitingForResponse = false
                             }
                         }
+                    } catch {
+                        // Handle any errors here
+                        print("Error generating image: \(error)")
+                        self.waitingForResponse = false
                     }
                 } else {
                     for await response in client.streamCompletions(request: ChatCompletionRequest.Companion.shared.chatCompletionRequest(
