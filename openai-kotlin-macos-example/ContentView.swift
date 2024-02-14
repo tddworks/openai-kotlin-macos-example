@@ -138,21 +138,19 @@ struct ContentView: View {
 
                         for imageResponse in listResponse.data {
                             if let image = imageResponse as? image {
-                                DispatchQueue.main.async {
-                                    if let imageUrl = image.url {
-                                        self.generateImageUrl = imageUrl
+                                if let imageUrl = image.url {
+                                    self.generateImageUrl = imageUrl
+                                } else {
+                                    if let base64Data = image.b64JSON?.data(using: .utf8),
+                                       let data = Data(base64Encoded: base64Data) {
+                                        self.generateImageB64 = data
                                     } else {
-                                        if let base64Data = image.b64JSON?.data(using: .utf8),
-                                           let data = Data(base64Encoded: base64Data) {
-                                            self.generateImageB64 = data
-                                        } else {
-                                            fatalError("Failed to decode base64 image data or handle guard failure.")
-                                        }
+                                        fatalError("Failed to decode base64 image data or handle guard failure.")
                                     }
-
-
-                                    self.waitingForResponse = false
                                 }
+
+
+                                self.waitingForResponse = false
                             }
                         }
                     } catch {
