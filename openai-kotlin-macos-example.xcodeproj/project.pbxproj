@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -11,7 +11,7 @@
 		4C07CE332B79EC9000A3AD1D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C07CE322B79EC9000A3AD1D /* ContentView.swift */; };
 		4C07CE352B79EC9100A3AD1D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C07CE342B79EC9100A3AD1D /* Assets.xcassets */; };
 		4C07CE382B79EC9100A3AD1D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C07CE372B79EC9100A3AD1D /* Preview Assets.xcassets */; };
-		4C07CE412B79ECB200A3AD1D /* openai-client-darwin in Frameworks */ = {isa = PBXBuildFile; productRef = 4C07CE402B79ECB200A3AD1D /* openai-client-darwin */; };
+		4C4D2D1E2BD558CC0008691B /* openai-gateway-darwin in Frameworks */ = {isa = PBXBuildFile; productRef = 4C4D2D1D2BD558CC0008691B /* openai-gateway-darwin */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,7 +28,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4C07CE412B79ECB200A3AD1D /* openai-client-darwin in Frameworks */,
+				4C4D2D1E2BD558CC0008691B /* openai-gateway-darwin in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -40,6 +40,7 @@
 			children = (
 				4C07CE2F2B79EC9000A3AD1D /* openai-kotlin-macos-example */,
 				4C07CE2E2B79EC9000A3AD1D /* Products */,
+				4C4D2D1C2BD558CC0008691B /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -71,6 +72,13 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		4C4D2D1C2BD558CC0008691B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -88,7 +96,7 @@
 			);
 			name = "openai-kotlin-macos-example";
 			packageProductDependencies = (
-				4C07CE402B79ECB200A3AD1D /* openai-client-darwin */,
+				4C4D2D1D2BD558CC0008691B /* openai-gateway-darwin */,
 			);
 			productName = "openai-kotlin-macos-example";
 			productReference = 4C07CE2D2B79EC9000A3AD1D /* openai-kotlin-macos-example.app */;
@@ -119,7 +127,7 @@
 			);
 			mainGroup = 4C07CE242B79EC9000A3AD1D;
 			packageReferences = (
-				4C07CE3F2B79ECB200A3AD1D /* XCRemoteSwiftPackageReference "openai-kotlin" */,
+				4C4D2D192BD556FE0008691B /* XCLocalSwiftPackageReference "../../../Downloads/openai-kotlin-0.2.1" */,
 			);
 			productRefGroup = 4C07CE2E2B79EC9000A3AD1D /* Products */;
 			projectDirPath = "";
@@ -279,11 +287,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "openai-kotlin-macos-example/openai_kotlin_macos_example.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"openai-kotlin-macos-example/Preview Content\"";
-				DEVELOPMENT_TEAM = Y5856NSDZU;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -295,6 +305,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.tddworks.openai-kotlin-macos-example";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 			};
@@ -306,11 +317,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "openai-kotlin-macos-example/openai_kotlin_macos_example.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"openai-kotlin-macos-example/Preview Content\"";
-				DEVELOPMENT_TEAM = Y5856NSDZU;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -322,6 +335,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.tddworks.openai-kotlin-macos-example";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 			};
@@ -350,22 +364,18 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		4C07CE3F2B79ECB200A3AD1D /* XCRemoteSwiftPackageReference "openai-kotlin" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/tddworks/openai-kotlin";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.1.8;
-			};
+/* Begin XCLocalSwiftPackageReference section */
+		4C4D2D192BD556FE0008691B /* XCLocalSwiftPackageReference "../../../Downloads/openai-kotlin-0.2.1" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../../../Downloads/openai-kotlin-0.2.1";
 		};
-/* End XCRemoteSwiftPackageReference section */
+/* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		4C07CE402B79ECB200A3AD1D /* openai-client-darwin */ = {
+		4C4D2D1D2BD558CC0008691B /* openai-gateway-darwin */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 4C07CE3F2B79ECB200A3AD1D /* XCRemoteSwiftPackageReference "openai-kotlin" */;
-			productName = "openai-client-darwin";
+			package = 4C4D2D192BD556FE0008691B /* XCLocalSwiftPackageReference "../../../Downloads/openai-kotlin-0.2.1" */;
+			productName = "openai-gateway-darwin";
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

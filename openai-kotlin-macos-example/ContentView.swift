@@ -5,9 +5,9 @@
 //
 
 import SwiftUI
-import openai_client_darwin
+import openai_gateway_darwin
 
-typealias image = openai_client_darwin.Image
+typealias image = openai_gateway_darwin.Image
 
 struct ContentView: View {
     @State private var apiKey: String = ""
@@ -121,7 +121,12 @@ struct ContentView: View {
     func sendRequest() {
         Task { @MainActor in
             do {
-                let client = DarwinOpenAI(token: apiKey, url: url)
+                let client = doInitOpenAI(config: OpenAIConfig(
+                        apiKey: { apiKey },
+                        baseUrl: { url }
+                )) { app in
+                    // Invoke any necessary code here
+                }
                 if generateImage {
                     self.waitingForResponse = true
                     do {
